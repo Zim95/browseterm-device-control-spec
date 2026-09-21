@@ -129,6 +129,13 @@ message ExecuteCommand {
   string expected_container_state = 6;
   string trace_id = 7;
   int64 deadline_unix_ms = 8;  // 0 = no deadline
+  // Migration Part 8-11: a strictly typed, validated configuration snapshot Cloud already
+  // resolved at command-creation time (image name, resource limits, env vars, publish info,
+  // saved_image for Resume) - the doc's sanctioned alternative to a separate device-scoped fetch
+  // RPC ("Cloud sends a strictly typed, validated configuration snapshot with a version").
+  // JSON-encoded rather than a nested message so the exact shape can evolve per-operation
+  // without a proto schema change for every new field Parts 8-11 discover they need.
+  string container_config_json = 9;
 }
 
 message InventoryRequest {
