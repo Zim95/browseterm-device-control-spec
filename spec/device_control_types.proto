@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+package browseterm.device.control.v1;
+
+// BROWSETERM_CLOUD_CONTROL_PLANE_MIGRATION.md Part 5: shared message types for the Device Agent
+// <-> Cloud bidirectional control stream. Mirrors browseterm-db's device_commands model
+// (CommandOperation/CommandStatus) so the wire contract and the durable command store never
+// drift apart - if you add an operation/status here, add it there too, and vice versa.
+
+enum CommandOperation {
+  COMMAND_OPERATION_UNSPECIFIED = 0;  // proto3 requires a zero value; never a real command
+  COMMAND_OPERATION_CREATE = 1;
+  COMMAND_OPERATION_DELETE = 2;
+  COMMAND_OPERATION_HIBERNATE = 3;
+  COMMAND_OPERATION_RESUME = 4;
+  COMMAND_OPERATION_RECONCILE = 5;
+}
+
+enum CommandStatus {
+  COMMAND_STATUS_UNSPECIFIED = 0;
+  COMMAND_STATUS_QUEUED = 1;
+  COMMAND_STATUS_DELIVERED = 2;
+  COMMAND_STATUS_ACCEPTED = 3;
+  COMMAND_STATUS_RUNNING = 4;
+  COMMAND_STATUS_SUCCEEDED = 5;
+  COMMAND_STATUS_FAILED = 6;
+  COMMAND_STATUS_CANCELLED = 7;
+}
+
+enum DevicePlatform {
+  DEVICE_PLATFORM_UNSPECIFIED = 0;
+  DEVICE_PLATFORM_MACOS = 1;
+  DEVICE_PLATFORM_WINDOWS = 2;
+  DEVICE_PLATFORM_LINUX = 3;
+}
+
+enum DeviceArchitecture {
+  DEVICE_ARCHITECTURE_UNSPECIFIED = 0;
+  DEVICE_ARCHITECTURE_AMD64 = 1;
+  DEVICE_ARCHITECTURE_ARM64 = 2;
+}
+
+// ---- Device -> Cloud ---------------------------------------------------------------------------
+
+// First message on every new stream. Cloud authenticates the stream using the bearer device
+// token carried in gRPC metadata (not in this message) - Hello carries identity Cloud needs to
+// evaluate compatibility and reconciliation, not credentials.
+message Hello {
+  string device_id = 1;
+  string agent_version = 2;
+  string protocol_version = 3;
+  DevicePlatform platform = 4;
+  DeviceArchitecture architecture = 5;
+  string runtime_version = 6;
+  // Stable per real Desktop/CLI process startup (not per reconnect) - see
+  // BROWSETERM_CLOUD_CONTROL_PLANE_MIGRATION.md Part 14. A transient gRPC reconnect reuses the
+  // same startup_id; only a genuinely new process startup mints a new one.
+  string startup_id = 7;
+}
+
+message Heartbeat {
+  int64 sent_at_unix_ms = 1;
+}
+
+message InventoryReport {
+  message ContainerInventoryItem {
+    string container_id = 1;
+    string kubernetes_id = 2;
+    string observed_status = 3;
+    int32 placement_generation = 4;
+  }
+  repeated ContainerInventoryItem containers = 1;
+  int32 available_cpu = 2;
+  int64 available_memory_bytes = 3;
+  int64 available_storage_bytes = 4;
+}
+
+message CommandAccepted {
+  string command_id = 1;
+  int64 accepted_at_unix_ms = 2;
+}
+
+message CommandProgress {
+  string command_id = 1;
+  string progress_stage = 2;
+  string progress_message = 3;  // bounded, never raw logs/stack traces
+}
+
+message CommandResult {
+  string command_id = 1;
+  CommandStatus status = 2;  // SUCCEEDED or FAILED only
+  string result_json = 3;  // documented per-operation schema, opaque here
+  string error_code = 4;
+  string error_message = 5;  // bounded and sanitized
+  int32 placement_generation = 6;  // the generation this result actually applies to
+}
+
+message TerminalTunnelRegistration {
+  string provider = 1;
+  string public_url = 2;
+  int32 generation = 3;
+  string status = 4;  // "online" | "offline"
+}
+
+message LocalEvent {
+  string event_type = 1;
+  string payload_json = 2;  // bounded, documented per event_type
+}
+
+message Pong {
+  int64 echoed_sent_at_unix_ms = 1;
+}
+
+// ---- Cloud -> Device ---------------------------------------------------------------------------
+
+message HelloAccepted {
+  string connection_id = 1;
+  int32 connection_generation = 2;  // bumped by Cloud each time this device's stream is replaced
+  string minimum_agent_version = 3;
+  bool reconciliation_required = 4;  // true on first Hello after a reconnect/redeploy
+}
+
+message ExecuteCommand {
+  string command_id = 1;
+  CommandOperation operation = 2;
+  string container_id = 3;
+  string device_id = 4;
+  int32 placement_generation = 5;
+  string expected_container_state = 6;
+  string trace_id = 7;
+  int64 deadline_unix_ms = 8;  // 0 = no deadline
+}
+
+message InventoryRequest {
+  string request_id = 1;
+}
+
+message CancelCommand {
+  string command_id = 1;
+  string reason = 2;
+}
+
+message ActiveStateChanged {
+  bool is_active_device = 1;
+}
+
+message CredentialRotationNotice {
+  string message = 1;
+  int64 effective_at_unix_ms = 2;
+}
+
+message Ping {
+  int64 sent_at_unix_ms = 1;
+}
+
+message ServerDraining {
+  int64 drain_by_unix_ms = 1;
+}

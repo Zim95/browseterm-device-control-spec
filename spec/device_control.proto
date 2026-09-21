@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package browseterm.device.control.v1;
+
+import "device_control_types.proto";
+
+// BROWSETERM_CLOUD_CONTROL_PLANE_MIGRATION.md Part 5: the Device Agent's single outbound
+// bidirectional gRPC stream to Cloud over TLS/HTTP2/port 443. Device Agent always dials; Cloud
+// never calls into a customer-controlled machine.
+service DeviceControl {
+  rpc Connect(stream DeviceToCloud) returns (stream CloudToDevice);
+}
+
+// Envelope for every message Device Agent sends on the stream.
+message DeviceToCloud {
+  oneof payload {
+    Hello hello = 1;
+    Heartbeat heartbeat = 2;
+    InventoryReport inventory_report = 3;
+    CommandAccepted command_accepted = 4;
+    CommandProgress command_progress = 5;
+    CommandResult command_result = 6;
+    TerminalTunnelRegistration terminal_tunnel_registration = 7;
+    LocalEvent local_event = 8;
+    Pong pong = 9;
+  }
+}
+
+// Envelope for every message Cloud sends on the stream.
+message CloudToDevice {
+  oneof payload {
+    HelloAccepted hello_accepted = 1;
+    ExecuteCommand execute_command = 2;
+    InventoryRequest inventory_request = 3;
+    CancelCommand cancel_command = 4;
+    ActiveStateChanged active_state_changed = 5;
+    CredentialRotationNotice credential_rotation_notice = 6;
+    Ping ping = 7;
+    ServerDraining server_draining = 8;
+  }
+}

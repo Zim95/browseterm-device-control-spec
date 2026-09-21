@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "browseterm-device-control-spec"
+version = "0.1.0"
+description = "Protobuf API spec for the Browseterm Device Control gRPC stream (Cloud <-> Device Agent)"
+authors = ["Namah Shrestha"]
+readme = "README.md"
+license = "AGPL-3.0-or-later"
+packages = [{include="device_control_spec"}]
+include = ["device_control_spec/**/*"]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.12"
+protobuf = "^5.29.0"
+grpcio = "^1.70.0"
+grpcio-tools = "^1.70.0"
+
+[build-system]
+requires = ["poetry-core", "grpcio-tools==1.70.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.build]
+generate-setup-file = false
+script = "build.py"
+
+[dependency-groups]
+dev = [
+    "pytest (>=7.4,<8.0)"
+]
