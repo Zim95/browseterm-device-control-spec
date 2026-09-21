@@ -58,12 +58,16 @@ message TerminalTicketRequest {
   string ticket = 1;
 }
 
+// Matches browseterm-server's existing POST /internal/terminal-tickets/consume response shape
+// exactly (src/cloud/terminal_handlers.py::consume_terminal_session) - this RPC is a thin relay
+// to that same endpoint, not a redesign of what it returns.
 message TerminalTarget {
   bool valid = 1;
   string container_id = 2;
-  string kubernetes_id = 3;
-  string internal_host = 4;
-  int32 internal_port = 5;
+  string ssh_host = 3;
+  int32 ssh_port = 4;
+  string ssh_username = 5;
+  string ssh_password = 6;
 }
 
 // Tunnel Registrar's ngrok URL/generation report (Part 13).

@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x18local_device_agent.proto\x12\x1c\x62rowseterm.device.control.v1\"\"\n\x03\x41\x63k\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\x85\x01\n\x0cStatusReport\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\x12\x11\n\tdevice_id\x18\x02 \x01(\t\x12\x1c\n\x14placement_generation\x18\x03 \x01(\x05\x12\x17\n\x0fobserved_status\x18\x04 \x01(\t\x12\x15\n\rkubernetes_id\x18\x05 \x01(\t\"\\\n\x10SnapshotProgress\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\x12\x12\n\ncommand_id\x18\x02 \x01(\t\x12\r\n\x05stage\x18\x03 \x01(\t\x12\x0f\n\x07message\x18\x04 \x01(\t\"8\n\x10HibernateRequest\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\x12\x0e\n\x06reason\x18\x02 \x01(\t\"F\n\x10\x43ommandReference\x12\x0f\n\x07\x63reated\x18\x01 \x01(\x08\x12\x12\n\ncommand_id\x18\x02 \x01(\t\x12\r\n\x05\x65rror\x18\x03 \x01(\t\"\'\n\x15TerminalTicketRequest\x12\x0e\n\x06ticket\x18\x01 \x01(\t\"z\n\x0eTerminalTarget\x12\r\n\x05valid\x18\x01 \x01(\x08\x12\x14\n\x0c\x63ontainer_id\x18\x02 \x01(\t\x12\x15\n\rkubernetes_id\x18\x03 \x01(\t\x12\x15\n\rinternal_host\x18\x04 \x01(\t\x12\x15\n\rinternal_port\x18\x05 \x01(\x05\"X\n\x0cTunnelReport\x12\x10\n\x08provider\x18\x01 \x01(\t\x12\x12\n\npublic_url\x18\x02 \x01(\t\x12\x12\n\ngeneration\x18\x03 \x01(\x05\x12\x0e\n\x06status\x18\x04 \x01(\t2\xb6\x04\n\x10LocalDeviceAgent\x12\x66\n\x15ReportContainerStatus\x12*.browseterm.device.control.v1.StatusReport\x1a!.browseterm.device.control.v1.Ack\x12k\n\x16ReportSnapshotProgress\x12..browseterm.device.control.v1.SnapshotProgress\x1a!.browseterm.device.control.v1.Ack\x12r\n\x10RequestHibernate\x12..browseterm.device.control.v1.HibernateRequest\x1a..browseterm.device.control.v1.CommandReference\x12z\n\x15\x43onsumeTerminalTicket\x12\x33.browseterm.device.control.v1.TerminalTicketRequest\x1a,.browseterm.device.control.v1.TerminalTarget\x12]\n\x0cReportTunnel\x12*.browseterm.device.control.v1.TunnelReport\x1a!.browseterm.device.control.v1.Ackb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x18local_device_agent.proto\x12\x1c\x62rowseterm.device.control.v1\"\"\n\x03\x41\x63k\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\x85\x01\n\x0cStatusReport\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\x12\x11\n\tdevice_id\x18\x02 \x01(\t\x12\x1c\n\x14placement_generation\x18\x03 \x01(\x05\x12\x17\n\x0fobserved_status\x18\x04 \x01(\t\x12\x15\n\rkubernetes_id\x18\x05 \x01(\t\"\\\n\x10SnapshotProgress\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\x12\x12\n\ncommand_id\x18\x02 \x01(\t\x12\r\n\x05stage\x18\x03 \x01(\t\x12\x0f\n\x07message\x18\x04 \x01(\t\"8\n\x10HibernateRequest\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\x12\x0e\n\x06reason\x18\x02 \x01(\t\"F\n\x10\x43ommandReference\x12\x0f\n\x07\x63reated\x18\x01 \x01(\x08\x12\x12\n\ncommand_id\x18\x02 \x01(\t\x12\r\n\x05\x65rror\x18\x03 \x01(\t\"\'\n\x15TerminalTicketRequest\x12\x0e\n\x06ticket\x18\x01 \x01(\t\"\x85\x01\n\x0eTerminalTarget\x12\r\n\x05valid\x18\x01 \x01(\x08\x12\x14\n\x0c\x63ontainer_id\x18\x02 \x01(\t\x12\x10\n\x08ssh_host\x18\x03 \x01(\t\x12\x10\n\x08ssh_port\x18\x04 \x01(\x05\x12\x14\n\x0cssh_username\x18\x05 \x01(\t\x12\x14\n\x0cssh_password\x18\x06 \x01(\t\"X\n\x0cTunnelReport\x12\x10\n\x08provider\x18\x01 \x01(\t\x12\x12\n\npublic_url\x18\x02 \x01(\t\x12\x12\n\ngeneration\x18\x03 \x01(\x05\x12\x0e\n\x06status\x18\x04 \x01(\t2\xb6\x04\n\x10LocalDeviceAgent\x12\x66\n\x15ReportContainerStatus\x12*.browseterm.device.control.v1.StatusReport\x1a!.browseterm.device.control.v1.Ack\x12k\n\x16ReportSnapshotProgress\x12..browseterm.device.control.v1.SnapshotProgress\x1a!.browseterm.device.control.v1.Ack\x12r\n\x10RequestHibernate\x12..browseterm.device.control.v1.HibernateRequest\x1a..browseterm.device.control.v1.CommandReference\x12z\n\x15\x43onsumeTerminalTicket\x12\x33.browseterm.device.control.v1.TerminalTicketRequest\x1a,.browseterm.device.control.v1.TerminalTarget\x12]\n\x0cReportTunnel\x12*.browseterm.device.control.v1.TunnelReport\x1a!.browseterm.device.control.v1.Ackb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -43,10 +43,10 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_COMMANDREFERENCE']._serialized_end=452
   _globals['_TERMINALTICKETREQUEST']._serialized_start=454
   _globals['_TERMINALTICKETREQUEST']._serialized_end=493
-  _globals['_TERMINALTARGET']._serialized_start=495
-  _globals['_TERMINALTARGET']._serialized_end=617
-  _globals['_TUNNELREPORT']._serialized_start=619
-  _globals['_TUNNELREPORT']._serialized_end=707
-  _globals['_LOCALDEVICEAGENT']._serialized_start=710
-  _globals['_LOCALDEVICEAGENT']._serialized_end=1276
+  _globals['_TERMINALTARGET']._serialized_start=496
+  _globals['_TERMINALTARGET']._serialized_end=629
+  _globals['_TUNNELREPORT']._serialized_start=631
+  _globals['_TUNNELREPORT']._serialized_end=719
+  _globals['_LOCALDEVICEAGENT']._serialized_start=722
+  _globals['_LOCALDEVICEAGENT']._serialized_end=1288
 # @@protoc_insertion_point(module_scope)
