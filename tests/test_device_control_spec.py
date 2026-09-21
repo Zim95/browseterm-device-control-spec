@@ -89,3 +89,21 @@ def test_service_stub_and_servicer_are_generated():
     assert hasattr(device_control_pb2_grpc, "DeviceControlStub")
     assert hasattr(device_control_pb2_grpc, "DeviceControlServicer")
     assert hasattr(device_control_pb2_grpc, "add_DeviceControlServicer_to_server")
+
+
+def test_execute_command_carries_container_config_json():
+    cmd = device_control_types_pb2.ExecuteCommand(command_id="c1", container_config_json='{"image_name":"x"}')
+    parsed = device_control_types_pb2.ExecuteCommand()
+    parsed.ParseFromString(cmd.SerializeToString())
+    assert parsed.container_config_json == '{"image_name":"x"}'
+
+
+def test_local_device_agent_service_is_generated():
+    from device_control_spec import local_device_agent_pb2, local_device_agent_pb2_grpc
+    assert hasattr(local_device_agent_pb2_grpc, "LocalDeviceAgentStub")
+    assert hasattr(local_device_agent_pb2_grpc, "LocalDeviceAgentServicer")
+    report = local_device_agent_pb2.StatusReport(container_id="c1", device_id="d1", placement_generation=2, observed_status="Running")
+    parsed = local_device_agent_pb2.StatusReport()
+    parsed.ParseFromString(report.SerializeToString())
+    assert parsed.container_id == "c1"
+    assert parsed.placement_generation == 2

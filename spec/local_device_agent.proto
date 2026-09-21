@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package browseterm.device.control.v1;
+
+// Migration Part 12: Device Agent's private, ClusterIP-only local API for Status Monitor, Reaper,
+// Snapshot Job and Socket-SSH - replaces every local job's direct use of the global
+// CLOUD_INTERNAL_API_TOKEN against Cloud. Device Agent forwards what needs to reach Cloud over
+// its own already-authenticated control stream (Part 6); local callers never hold a Cloud
+// credential of any kind, only network access to this ClusterIP service (gated further by
+// NetworkPolicy, not authentication - see Part 12's own doc section on this).
+service LocalDeviceAgent {
+  rpc ReportContainerStatus(StatusReport) returns (Ack);
+  rpc ReportSnapshotProgress(SnapshotProgress) returns (Ack);
+  rpc RequestHibernate(HibernateRequest) returns (CommandReference);
+  rpc ConsumeTerminalTicket(TerminalTicketRequest) returns (TerminalTarget);
+  rpc ReportTunnel(TunnelReport) returns (Ack);
+}
+
+message Ack {
+  bool ok = 1;
+  string message = 2;
+}
+
+// Status Monitor's periodic "does Cloud's idea of Running still have a live pod" report.
+message StatusReport {
+  string container_id = 1;
+  string device_id = 2;
+  int32 placement_generation = 3;
+  string observed_status = 4;  // a ContainerStatus value, as observed from the live pod
+  string kubernetes_id = 5;
+}
+
+// Snapshot Job's build/push progress, forwarded to Cloud as CommandProgress on the control stream.
+message SnapshotProgress {
+  string container_id = 1;
+  string command_id = 2;  // the HIBERNATE command this snapshot belongs to, if known
+  string stage = 3;  // "snapshotting" | "building_image" | "pushing_image" | "verifying_image"
+  string message = 4;
+}
+
+// Reaper's idle-detection trigger - "duplicate idle detections must collapse to one active
+// hibernate command" (Part 12) is enforced by Cloud's own partial unique index (Part 1), not by
+// this RPC; a second RequestHibernate for an already-hibernating container is expected to fail
+// cleanly, not silently duplicate work.
+message HibernateRequest {
+  string container_id = 1;
+  string reason = 2;  // "idle_timeout" | "manual"
+}
+
+message CommandReference {
+  bool created = 1;
+  string command_id = 2;
+  string error = 3;  // set when created is false, e.g. "already hibernating"
+}
+
+// Socket-SSH's single-use terminal ticket redemption (Part 13).
+message TerminalTicketRequest {
+  string ticket = 1;
+}
+
+message TerminalTarget {
+  bool valid = 1;
+  string container_id = 2;
+  string kubernetes_id = 3;
+  string internal_host = 4;
+  int32 internal_port = 5;
+}
+
+// Tunnel Registrar's ngrok URL/generation report (Part 13).
+message TunnelReport {
+  string provider = 1;
+  string public_url = 2;
+  int32 generation = 3;
+  string status = 4;  // "online" | "offline"
+}

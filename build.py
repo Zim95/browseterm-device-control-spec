@@ -42,7 +42,7 @@ def replace_import() -> None:
     Find _pb2 imports, add PACKAGE_NAME.*_pb2 in the imports.
     """
     file_paths: map = map(lambda x: pathlib.Path(x),
-                     glob.glob(f'{PACKAGE_DIR}device_control_*.py', recursive=True))
+                     glob.glob(f'{PACKAGE_DIR}*_pb2*.py', recursive=True))
     type_modules: list = [
         "device_control_types_pb2",
         # Unlike container-maker-spec's service.proto (which defines no messages of its own -
@@ -51,6 +51,8 @@ def replace_import() -> None:
         # device_control_pb2 (its own sibling module) too - that self-import needs namespacing
         # exactly like the types import does, or it fails once installed as a package.
         "device_control_pb2",
+        # local_device_agent.proto (Part 12) defines its own messages too, same self-import issue.
+        "local_device_agent_pb2",
     ]
     for file in file_paths:
         text: str = file.read_text()
