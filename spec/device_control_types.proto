@@ -14,6 +14,10 @@ enum CommandOperation {
   COMMAND_OPERATION_HIBERNATE = 3;
   COMMAND_OPERATION_RESUME = 4;
   COMMAND_OPERATION_RECONCILE = 5;
+  // Snapshots the container without deleting it (unlike HIBERNATE, which saves then deletes).
+  // Core reliability feature, wired the same way as every other command: durable command row,
+  // delivered over the control stream, Device Agent executes it and reports a result.
+  COMMAND_OPERATION_SAVE = 6;
 }
 
 enum CommandStatus {
