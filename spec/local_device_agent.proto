@@ -44,7 +44,10 @@ message SnapshotProgress {
 // cleanly, not silently duplicate work.
 message HibernateRequest {
   string container_id = 1;
-  string reason = 2;  // "idle_timeout" | "manual"
+  // "idle_timeout" (Reaper) | "manual" | "pod_lost" (status_monitor's pod_watcher, for a crashed
+  // or externally-removed pod - added 2026-09-27). Device Agent maps "pod_lost" to a skip_save
+  // hibernate: the pod is already gone/unusable, so there is nothing left to snapshot.
+  string reason = 2;
 }
 
 message CommandReference {
