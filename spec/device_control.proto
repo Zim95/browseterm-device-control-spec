@@ -7,8 +7,25 @@ import "device_control_types.proto";
 // BROWSETERM_CLOUD_CONTROL_PLANE_MIGRATION.md Part 5: the Device Agent's single outbound
 // bidirectional gRPC stream to Cloud over TLS/HTTP2/port 443. Device Agent always dials; Cloud
 // never calls into a customer-controlled machine.
+//
+// CheckDeviceConnected is a separate, Cloud-internal-only RPC on this same service: the
+// browseterm-server-cloud web pod calls it (over the cluster-internal Service, not a customer
+// connection) to ask browseterm-control-grpc's own in-memory ConnectionRegistry - the only place
+// "is this device's stream actually live right now" is known - rather than the browser having to
+// wait for the next periodic heartbeat write to Postgres to catch up. Does not violate "Cloud
+// never calls into a customer-controlled machine" above: both ends of this call are Cloud's own
+// pods.
 service DeviceControl {
   rpc Connect(stream DeviceToCloud) returns (stream CloudToDevice);
+  rpc CheckDeviceConnected(CheckDeviceConnectedRequest) returns (CheckDeviceConnectedResponse);
+}
+
+message CheckDeviceConnectedRequest {
+  string device_id = 1;
+}
+
+message CheckDeviceConnectedResponse {
+  bool connected = 1;
 }
 
 // Envelope for every message Device Agent sends on the stream.

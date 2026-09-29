@@ -29,6 +29,14 @@ class DeviceControlStub(object):
     """BROWSETERM_CLOUD_CONTROL_PLANE_MIGRATION.md Part 5: the Device Agent's single outbound
     bidirectional gRPC stream to Cloud over TLS/HTTP2/port 443. Device Agent always dials; Cloud
     never calls into a customer-controlled machine.
+
+    CheckDeviceConnected is a separate, Cloud-internal-only RPC on this same service: the
+    browseterm-server-cloud web pod calls it (over the cluster-internal Service, not a customer
+    connection) to ask browseterm-control-grpc's own in-memory ConnectionRegistry - the only place
+    "is this device's stream actually live right now" is known - rather than the browser having to
+    wait for the next periodic heartbeat write to Postgres to catch up. Does not violate "Cloud
+    never calls into a customer-controlled machine" above: both ends of this call are Cloud's own
+    pods.
     """
 
     def __init__(self, channel):
@@ -42,15 +50,34 @@ class DeviceControlStub(object):
                 request_serializer=device__control__pb2.DeviceToCloud.SerializeToString,
                 response_deserializer=device__control__pb2.CloudToDevice.FromString,
                 _registered_method=True)
+        self.CheckDeviceConnected = channel.unary_unary(
+                '/browseterm.device.control.v1.DeviceControl/CheckDeviceConnected',
+                request_serializer=device__control__pb2.CheckDeviceConnectedRequest.SerializeToString,
+                response_deserializer=device__control__pb2.CheckDeviceConnectedResponse.FromString,
+                _registered_method=True)
 
 
 class DeviceControlServicer(object):
     """BROWSETERM_CLOUD_CONTROL_PLANE_MIGRATION.md Part 5: the Device Agent's single outbound
     bidirectional gRPC stream to Cloud over TLS/HTTP2/port 443. Device Agent always dials; Cloud
     never calls into a customer-controlled machine.
+
+    CheckDeviceConnected is a separate, Cloud-internal-only RPC on this same service: the
+    browseterm-server-cloud web pod calls it (over the cluster-internal Service, not a customer
+    connection) to ask browseterm-control-grpc's own in-memory ConnectionRegistry - the only place
+    "is this device's stream actually live right now" is known - rather than the browser having to
+    wait for the next periodic heartbeat write to Postgres to catch up. Does not violate "Cloud
+    never calls into a customer-controlled machine" above: both ends of this call are Cloud's own
+    pods.
     """
 
     def Connect(self, request_iterator, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CheckDeviceConnected(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -64,6 +91,11 @@ def add_DeviceControlServicer_to_server(servicer, server):
                     request_deserializer=device__control__pb2.DeviceToCloud.FromString,
                     response_serializer=device__control__pb2.CloudToDevice.SerializeToString,
             ),
+            'CheckDeviceConnected': grpc.unary_unary_rpc_method_handler(
+                    servicer.CheckDeviceConnected,
+                    request_deserializer=device__control__pb2.CheckDeviceConnectedRequest.FromString,
+                    response_serializer=device__control__pb2.CheckDeviceConnectedResponse.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
             'browseterm.device.control.v1.DeviceControl', rpc_method_handlers)
@@ -76,6 +108,14 @@ class DeviceControl(object):
     """BROWSETERM_CLOUD_CONTROL_PLANE_MIGRATION.md Part 5: the Device Agent's single outbound
     bidirectional gRPC stream to Cloud over TLS/HTTP2/port 443. Device Agent always dials; Cloud
     never calls into a customer-controlled machine.
+
+    CheckDeviceConnected is a separate, Cloud-internal-only RPC on this same service: the
+    browseterm-server-cloud web pod calls it (over the cluster-internal Service, not a customer
+    connection) to ask browseterm-control-grpc's own in-memory ConnectionRegistry - the only place
+    "is this device's stream actually live right now" is known - rather than the browser having to
+    wait for the next periodic heartbeat write to Postgres to catch up. Does not violate "Cloud
+    never calls into a customer-controlled machine" above: both ends of this call are Cloud's own
+    pods.
     """
 
     @staticmethod
@@ -95,6 +135,33 @@ class DeviceControl(object):
             '/browseterm.device.control.v1.DeviceControl/Connect',
             device__control__pb2.DeviceToCloud.SerializeToString,
             device__control__pb2.CloudToDevice.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CheckDeviceConnected(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/browseterm.device.control.v1.DeviceControl/CheckDeviceConnected',
+            device__control__pb2.CheckDeviceConnectedRequest.SerializeToString,
+            device__control__pb2.CheckDeviceConnectedResponse.FromString,
             options,
             channel_credentials,
             insecure,
