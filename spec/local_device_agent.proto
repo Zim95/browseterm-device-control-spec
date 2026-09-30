@@ -14,6 +14,13 @@ service LocalDeviceAgent {
   rpc RequestHibernate(HibernateRequest) returns (CommandReference);
   rpc ConsumeTerminalTicket(TerminalTicketRequest) returns (TerminalTarget);
   rpc ReportTunnel(TunnelReport) returns (Ack);
+  // Tunnel Registrar's resync check (added 2026-09-30): ReportTunnel is fire-and-forget with no
+  // rejection signal, so a registrar whose locally-persisted generation counter ever falls behind
+  // Cloud's own (e.g. its PersistentVolumeClaim is lost/recreated, or a manual reset undershoots)
+  // would otherwise retry a permanently-too-low generation forever, silently dropped server-side.
+  // This is a synchronous, device-scoped read of Cloud's own authoritative value - see
+  // GetTunnelGenerationResponse's own comment for how a caller is expected to use it.
+  rpc GetTunnelGeneration(GetTunnelGenerationRequest) returns (GetTunnelGenerationResponse);
 }
 
 message Ack {
@@ -79,4 +86,18 @@ message TunnelReport {
   string public_url = 2;
   int32 generation = 3;
   string status = 4;  // "online" | "offline"
+}
+
+// Empty on purpose - the device this call is scoped to is already implied by Device Agent's own
+// identity (its device-scoped Bearer token to Cloud), not passed in by the caller.
+message GetTunnelGenerationRequest {
+}
+
+// Cloud's currently-stored devices.tunnel_generation for this device (0 if the device has never
+// registered a tunnel at all). A caller like Tunnel Registrar should seed its own counter as
+// max(locally_persisted, generation) on startup - never trust the local value alone as the sole
+// source of truth, since that's exactly the assumption whose failure caused the 2026-09-19 and
+// 2026-09-30 incidents this RPC exists to prevent from recurring.
+message GetTunnelGenerationResponse {
+  int32 generation = 1;
 }

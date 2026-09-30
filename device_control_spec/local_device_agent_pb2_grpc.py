@@ -65,6 +65,11 @@ class LocalDeviceAgentStub(object):
                 request_serializer=local__device__agent__pb2.TunnelReport.SerializeToString,
                 response_deserializer=local__device__agent__pb2.Ack.FromString,
                 _registered_method=True)
+        self.GetTunnelGeneration = channel.unary_unary(
+                '/browseterm.device.control.v1.LocalDeviceAgent/GetTunnelGeneration',
+                request_serializer=local__device__agent__pb2.GetTunnelGenerationRequest.SerializeToString,
+                response_deserializer=local__device__agent__pb2.GetTunnelGenerationResponse.FromString,
+                _registered_method=True)
 
 
 class LocalDeviceAgentServicer(object):
@@ -106,6 +111,18 @@ class LocalDeviceAgentServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetTunnelGeneration(self, request, context):
+        """Tunnel Registrar's resync check (added 2026-09-30): ReportTunnel is fire-and-forget with no
+        rejection signal, so a registrar whose locally-persisted generation counter ever falls behind
+        Cloud's own (e.g. its PersistentVolumeClaim is lost/recreated, or a manual reset undershoots)
+        would otherwise retry a permanently-too-low generation forever, silently dropped server-side.
+        This is a synchronous, device-scoped read of Cloud's own authoritative value - see
+        GetTunnelGenerationResponse's own comment for how a caller is expected to use it.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_LocalDeviceAgentServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -133,6 +150,11 @@ def add_LocalDeviceAgentServicer_to_server(servicer, server):
                     servicer.ReportTunnel,
                     request_deserializer=local__device__agent__pb2.TunnelReport.FromString,
                     response_serializer=local__device__agent__pb2.Ack.SerializeToString,
+            ),
+            'GetTunnelGeneration': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetTunnelGeneration,
+                    request_deserializer=local__device__agent__pb2.GetTunnelGenerationRequest.FromString,
+                    response_serializer=local__device__agent__pb2.GetTunnelGenerationResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -276,6 +298,33 @@ class LocalDeviceAgent(object):
             '/browseterm.device.control.v1.LocalDeviceAgent/ReportTunnel',
             local__device__agent__pb2.TunnelReport.SerializeToString,
             local__device__agent__pb2.Ack.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetTunnelGeneration(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/browseterm.device.control.v1.LocalDeviceAgent/GetTunnelGeneration',
+            local__device__agent__pb2.GetTunnelGenerationRequest.SerializeToString,
+            local__device__agent__pb2.GetTunnelGenerationResponse.FromString,
             options,
             channel_credentials,
             insecure,
