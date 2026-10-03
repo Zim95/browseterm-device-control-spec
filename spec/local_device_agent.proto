@@ -71,6 +71,10 @@ message SnapshotAllocation {
   string version = 3;
   string image_repository = 4;
   string status = 5;
+  // snapshot_job's main.py tags/pushes the built image under this exact reference - must be
+  // carried here, not re-derived locally, since Cloud is the sole source of truth for it
+  // (SnapshotOps.insert's own image_tag field).
+  string image_tag = 6;
 }
 
 // status is one of "Running"/"Succeeded"/"Failed" - matches report_snapshot_result's existing
