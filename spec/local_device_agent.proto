@@ -21,6 +21,85 @@ service LocalDeviceAgent {
   // This is a synchronous, device-scoped read of Cloud's own authoritative value - see
   // GetTunnelGenerationResponse's own comment for how a caller is expected to use it.
   rpc GetTunnelGeneration(GetTunnelGenerationRequest) returns (GetTunnelGenerationResponse);
+
+  // The 6 RPCs below finish Part 12: the last local-stack call sites that still used the global
+  // CLOUD_INTERNAL_API_TOKEN secret (status_monitor's resource-drift reconciler, reaper's idle
+  // sweep, snapshot_job's allocate/report, and container-maker's one remaining direct DB-row
+  // lookup) now go through Device Agent's own per-device Bearer credential instead, like every
+  // other local caller already does. All six need a real response back (not just an Ack a caller
+  // ignores), so - same reasoning as RequestHibernate/ConsumeTerminalTicket/GetTunnelGeneration
+  // above - they go through Device Agent's synchronous cloud_client HTTP path, not the
+  // fire-and-forget control stream.
+  rpc GetActiveContainerIds(Empty) returns (ContainerIdList);
+  rpc ReconcileDeviceResources(ReconcileResourcesRequest) returns (Ack);
+  rpc GetIdleContainers(GetIdleContainersRequest) returns (ContainerIdList);
+  rpc AllocateSnapshot(AllocateSnapshotRequest) returns (SnapshotAllocation);
+  rpc ReportSnapshotResult(SnapshotResultReport) returns (Ack);
+  rpc GetContainer(GetContainerRequest) returns (GetContainerResponse);
+  rpc UpdateContainerKubernetesId(UpdateKubernetesIdRequest) returns (Ack);
+}
+
+// Empty on purpose, same convention as GetTunnelGenerationRequest - the device this call is
+// scoped to is already implied by Device Agent's own identity.
+message Empty {
+}
+
+message ContainerIdList {
+  repeated string container_ids = 1;
+}
+
+// status_monitor's resource-drift repair (P14) - see browseterm-server's own
+// reconcile_device_resources docstring for what Cloud does with this.
+message ReconcileResourcesRequest {
+  repeated string running_container_ids = 1;
+  map<string, string> running_pod_ips = 2;
+}
+
+message GetIdleContainersRequest {
+  int32 idle_threshold_seconds = 1;
+}
+
+// Matches CloudClient.allocate_snapshot's existing return shape exactly (snapshot_job's P17).
+message AllocateSnapshotRequest {
+  string container_id = 1;
+  string request_id = 2;
+}
+
+message SnapshotAllocation {
+  string id = 1;
+  int32 version_sequence = 2;
+  string version = 3;
+  string image_repository = 4;
+  string status = 5;
+}
+
+// status is one of "Running"/"Succeeded"/"Failed" - matches report_snapshot_result's existing
+// contract exactly.
+message SnapshotResultReport {
+  string container_id = 1;
+  string snapshot_id = 2;
+  string status = 3;
+  string image_reference = 4;
+  string registry_digest = 5;
+  string error_detail = 6;
+}
+
+message GetContainerRequest {
+  string container_id = 1;
+}
+
+// container_json is an opaque JSON blob of the full container row, same established pattern as
+// ExecuteCommand.container_config_json (device_control_types.proto) - container-maker's own
+// save() flow reads several fields off this row (id/name/associated_resources/kubernetes_id) and
+// hand-enumerating each one here risks silently dropping one it needs later.
+message GetContainerResponse {
+  bool found = 1;
+  string container_json = 2;
+}
+
+message UpdateKubernetesIdRequest {
+  string container_id = 1;
+  string kubernetes_id = 2;
 }
 
 message Ack {

@@ -24,33 +24,57 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x18local_device_agent.proto\x12\x1c\x62rowseterm.device.control.v1\"\"\n\x03\x41\x63k\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\x85\x01\n\x0cStatusReport\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\x12\x11\n\tdevice_id\x18\x02 \x01(\t\x12\x1c\n\x14placement_generation\x18\x03 \x01(\x05\x12\x17\n\x0fobserved_status\x18\x04 \x01(\t\x12\x15\n\rkubernetes_id\x18\x05 \x01(\t\"\\\n\x10SnapshotProgress\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\x12\x12\n\ncommand_id\x18\x02 \x01(\t\x12\r\n\x05stage\x18\x03 \x01(\t\x12\x0f\n\x07message\x18\x04 \x01(\t\"8\n\x10HibernateRequest\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\x12\x0e\n\x06reason\x18\x02 \x01(\t\"F\n\x10\x43ommandReference\x12\x0f\n\x07\x63reated\x18\x01 \x01(\x08\x12\x12\n\ncommand_id\x18\x02 \x01(\t\x12\r\n\x05\x65rror\x18\x03 \x01(\t\"\'\n\x15TerminalTicketRequest\x12\x0e\n\x06ticket\x18\x01 \x01(\t\"\x85\x01\n\x0eTerminalTarget\x12\r\n\x05valid\x18\x01 \x01(\x08\x12\x14\n\x0c\x63ontainer_id\x18\x02 \x01(\t\x12\x10\n\x08ssh_host\x18\x03 \x01(\t\x12\x10\n\x08ssh_port\x18\x04 \x01(\x05\x12\x14\n\x0cssh_username\x18\x05 \x01(\t\x12\x14\n\x0cssh_password\x18\x06 \x01(\t\"X\n\x0cTunnelReport\x12\x10\n\x08provider\x18\x01 \x01(\t\x12\x12\n\npublic_url\x18\x02 \x01(\t\x12\x12\n\ngeneration\x18\x03 \x01(\x05\x12\x0e\n\x06status\x18\x04 \x01(\t\"\x1c\n\x1aGetTunnelGenerationRequest\"1\n\x1bGetTunnelGenerationResponse\x12\x12\n\ngeneration\x18\x01 \x01(\x05\x32\xc3\x05\n\x10LocalDeviceAgent\x12\x66\n\x15ReportContainerStatus\x12*.browseterm.device.control.v1.StatusReport\x1a!.browseterm.device.control.v1.Ack\x12k\n\x16ReportSnapshotProgress\x12..browseterm.device.control.v1.SnapshotProgress\x1a!.browseterm.device.control.v1.Ack\x12r\n\x10RequestHibernate\x12..browseterm.device.control.v1.HibernateRequest\x1a..browseterm.device.control.v1.CommandReference\x12z\n\x15\x43onsumeTerminalTicket\x12\x33.browseterm.device.control.v1.TerminalTicketRequest\x1a,.browseterm.device.control.v1.TerminalTarget\x12]\n\x0cReportTunnel\x12*.browseterm.device.control.v1.TunnelReport\x1a!.browseterm.device.control.v1.Ack\x12\x8a\x01\n\x13GetTunnelGeneration\x12\x38.browseterm.device.control.v1.GetTunnelGenerationRequest\x1a\x39.browseterm.device.control.v1.GetTunnelGenerationResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x18local_device_agent.proto\x12\x1c\x62rowseterm.device.control.v1\"\x07\n\x05\x45mpty\"(\n\x0f\x43ontainerIdList\x12\x15\n\rcontainer_ids\x18\x01 \x03(\t\"\xd5\x01\n\x19ReconcileResourcesRequest\x12\x1d\n\x15running_container_ids\x18\x01 \x03(\t\x12\x63\n\x0frunning_pod_ips\x18\x02 \x03(\x0b\x32J.browseterm.device.control.v1.ReconcileResourcesRequest.RunningPodIpsEntry\x1a\x34\n\x12RunningPodIpsEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\":\n\x18GetIdleContainersRequest\x12\x1e\n\x16idle_threshold_seconds\x18\x01 \x01(\x05\"C\n\x17\x41llocateSnapshotRequest\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\x12\x12\n\nrequest_id\x18\x02 \x01(\t\"u\n\x12SnapshotAllocation\x12\n\n\x02id\x18\x01 \x01(\t\x12\x18\n\x10version_sequence\x18\x02 \x01(\x05\x12\x0f\n\x07version\x18\x03 \x01(\t\x12\x18\n\x10image_repository\x18\x04 \x01(\t\x12\x0e\n\x06status\x18\x05 \x01(\t\"\x99\x01\n\x14SnapshotResultReport\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\x12\x13\n\x0bsnapshot_id\x18\x02 \x01(\t\x12\x0e\n\x06status\x18\x03 \x01(\t\x12\x17\n\x0fimage_reference\x18\x04 \x01(\t\x12\x17\n\x0fregistry_digest\x18\x05 \x01(\t\x12\x14\n\x0c\x65rror_detail\x18\x06 \x01(\t\"+\n\x13GetContainerRequest\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\"=\n\x14GetContainerResponse\x12\r\n\x05\x66ound\x18\x01 \x01(\x08\x12\x16\n\x0e\x63ontainer_json\x18\x02 \x01(\t\"H\n\x19UpdateKubernetesIdRequest\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\x12\x15\n\rkubernetes_id\x18\x02 \x01(\t\"\"\n\x03\x41\x63k\x12\n\n\x02ok\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\x85\x01\n\x0cStatusReport\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\x12\x11\n\tdevice_id\x18\x02 \x01(\t\x12\x1c\n\x14placement_generation\x18\x03 \x01(\x05\x12\x17\n\x0fobserved_status\x18\x04 \x01(\t\x12\x15\n\rkubernetes_id\x18\x05 \x01(\t\"\\\n\x10SnapshotProgress\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\x12\x12\n\ncommand_id\x18\x02 \x01(\t\x12\r\n\x05stage\x18\x03 \x01(\t\x12\x0f\n\x07message\x18\x04 \x01(\t\"8\n\x10HibernateRequest\x12\x14\n\x0c\x63ontainer_id\x18\x01 \x01(\t\x12\x0e\n\x06reason\x18\x02 \x01(\t\"F\n\x10\x43ommandReference\x12\x0f\n\x07\x63reated\x18\x01 \x01(\x08\x12\x12\n\ncommand_id\x18\x02 \x01(\t\x12\r\n\x05\x65rror\x18\x03 \x01(\t\"\'\n\x15TerminalTicketRequest\x12\x0e\n\x06ticket\x18\x01 \x01(\t\"\x85\x01\n\x0eTerminalTarget\x12\r\n\x05valid\x18\x01 \x01(\x08\x12\x14\n\x0c\x63ontainer_id\x18\x02 \x01(\t\x12\x10\n\x08ssh_host\x18\x03 \x01(\t\x12\x10\n\x08ssh_port\x18\x04 \x01(\x05\x12\x14\n\x0cssh_username\x18\x05 \x01(\t\x12\x14\n\x0cssh_password\x18\x06 \x01(\t\"X\n\x0cTunnelReport\x12\x10\n\x08provider\x18\x01 \x01(\t\x12\x12\n\npublic_url\x18\x02 \x01(\t\x12\x12\n\ngeneration\x18\x03 \x01(\x05\x12\x0e\n\x06status\x18\x04 \x01(\t\"\x1c\n\x1aGetTunnelGenerationRequest\"1\n\x1bGetTunnelGenerationResponse\x12\x12\n\ngeneration\x18\x01 \x01(\x05\x32\x82\x0c\n\x10LocalDeviceAgent\x12\x66\n\x15ReportContainerStatus\x12*.browseterm.device.control.v1.StatusReport\x1a!.browseterm.device.control.v1.Ack\x12k\n\x16ReportSnapshotProgress\x12..browseterm.device.control.v1.SnapshotProgress\x1a!.browseterm.device.control.v1.Ack\x12r\n\x10RequestHibernate\x12..browseterm.device.control.v1.HibernateRequest\x1a..browseterm.device.control.v1.CommandReference\x12z\n\x15\x43onsumeTerminalTicket\x12\x33.browseterm.device.control.v1.TerminalTicketRequest\x1a,.browseterm.device.control.v1.TerminalTarget\x12]\n\x0cReportTunnel\x12*.browseterm.device.control.v1.TunnelReport\x1a!.browseterm.device.control.v1.Ack\x12\x8a\x01\n\x13GetTunnelGeneration\x12\x38.browseterm.device.control.v1.GetTunnelGenerationRequest\x1a\x39.browseterm.device.control.v1.GetTunnelGenerationResponse\x12k\n\x15GetActiveContainerIds\x12#.browseterm.device.control.v1.Empty\x1a-.browseterm.device.control.v1.ContainerIdList\x12v\n\x18ReconcileDeviceResources\x12\x37.browseterm.device.control.v1.ReconcileResourcesRequest\x1a!.browseterm.device.control.v1.Ack\x12z\n\x11GetIdleContainers\x12\x36.browseterm.device.control.v1.GetIdleContainersRequest\x1a-.browseterm.device.control.v1.ContainerIdList\x12{\n\x10\x41llocateSnapshot\x12\x35.browseterm.device.control.v1.AllocateSnapshotRequest\x1a\x30.browseterm.device.control.v1.SnapshotAllocation\x12m\n\x14ReportSnapshotResult\x12\x32.browseterm.device.control.v1.SnapshotResultReport\x1a!.browseterm.device.control.v1.Ack\x12u\n\x0cGetContainer\x12\x31.browseterm.device.control.v1.GetContainerRequest\x1a\x32.browseterm.device.control.v1.GetContainerResponse\x12y\n\x1bUpdateContainerKubernetesId\x12\x37.browseterm.device.control.v1.UpdateKubernetesIdRequest\x1a!.browseterm.device.control.v1.Ackb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'local_device_agent_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_ACK']._serialized_start=58
-  _globals['_ACK']._serialized_end=92
-  _globals['_STATUSREPORT']._serialized_start=95
-  _globals['_STATUSREPORT']._serialized_end=228
-  _globals['_SNAPSHOTPROGRESS']._serialized_start=230
-  _globals['_SNAPSHOTPROGRESS']._serialized_end=322
-  _globals['_HIBERNATEREQUEST']._serialized_start=324
-  _globals['_HIBERNATEREQUEST']._serialized_end=380
-  _globals['_COMMANDREFERENCE']._serialized_start=382
-  _globals['_COMMANDREFERENCE']._serialized_end=452
-  _globals['_TERMINALTICKETREQUEST']._serialized_start=454
-  _globals['_TERMINALTICKETREQUEST']._serialized_end=493
-  _globals['_TERMINALTARGET']._serialized_start=496
-  _globals['_TERMINALTARGET']._serialized_end=629
-  _globals['_TUNNELREPORT']._serialized_start=631
-  _globals['_TUNNELREPORT']._serialized_end=719
-  _globals['_GETTUNNELGENERATIONREQUEST']._serialized_start=721
-  _globals['_GETTUNNELGENERATIONREQUEST']._serialized_end=749
-  _globals['_GETTUNNELGENERATIONRESPONSE']._serialized_start=751
-  _globals['_GETTUNNELGENERATIONRESPONSE']._serialized_end=800
-  _globals['_LOCALDEVICEAGENT']._serialized_start=803
-  _globals['_LOCALDEVICEAGENT']._serialized_end=1510
+  _globals['_RECONCILERESOURCESREQUEST_RUNNINGPODIPSENTRY']._loaded_options = None
+  _globals['_RECONCILERESOURCESREQUEST_RUNNINGPODIPSENTRY']._serialized_options = b'8\001'
+  _globals['_EMPTY']._serialized_start=58
+  _globals['_EMPTY']._serialized_end=65
+  _globals['_CONTAINERIDLIST']._serialized_start=67
+  _globals['_CONTAINERIDLIST']._serialized_end=107
+  _globals['_RECONCILERESOURCESREQUEST']._serialized_start=110
+  _globals['_RECONCILERESOURCESREQUEST']._serialized_end=323
+  _globals['_RECONCILERESOURCESREQUEST_RUNNINGPODIPSENTRY']._serialized_start=271
+  _globals['_RECONCILERESOURCESREQUEST_RUNNINGPODIPSENTRY']._serialized_end=323
+  _globals['_GETIDLECONTAINERSREQUEST']._serialized_start=325
+  _globals['_GETIDLECONTAINERSREQUEST']._serialized_end=383
+  _globals['_ALLOCATESNAPSHOTREQUEST']._serialized_start=385
+  _globals['_ALLOCATESNAPSHOTREQUEST']._serialized_end=452
+  _globals['_SNAPSHOTALLOCATION']._serialized_start=454
+  _globals['_SNAPSHOTALLOCATION']._serialized_end=571
+  _globals['_SNAPSHOTRESULTREPORT']._serialized_start=574
+  _globals['_SNAPSHOTRESULTREPORT']._serialized_end=727
+  _globals['_GETCONTAINERREQUEST']._serialized_start=729
+  _globals['_GETCONTAINERREQUEST']._serialized_end=772
+  _globals['_GETCONTAINERRESPONSE']._serialized_start=774
+  _globals['_GETCONTAINERRESPONSE']._serialized_end=835
+  _globals['_UPDATEKUBERNETESIDREQUEST']._serialized_start=837
+  _globals['_UPDATEKUBERNETESIDREQUEST']._serialized_end=909
+  _globals['_ACK']._serialized_start=911
+  _globals['_ACK']._serialized_end=945
+  _globals['_STATUSREPORT']._serialized_start=948
+  _globals['_STATUSREPORT']._serialized_end=1081
+  _globals['_SNAPSHOTPROGRESS']._serialized_start=1083
+  _globals['_SNAPSHOTPROGRESS']._serialized_end=1175
+  _globals['_HIBERNATEREQUEST']._serialized_start=1177
+  _globals['_HIBERNATEREQUEST']._serialized_end=1233
+  _globals['_COMMANDREFERENCE']._serialized_start=1235
+  _globals['_COMMANDREFERENCE']._serialized_end=1305
+  _globals['_TERMINALTICKETREQUEST']._serialized_start=1307
+  _globals['_TERMINALTICKETREQUEST']._serialized_end=1346
+  _globals['_TERMINALTARGET']._serialized_start=1349
+  _globals['_TERMINALTARGET']._serialized_end=1482
+  _globals['_TUNNELREPORT']._serialized_start=1484
+  _globals['_TUNNELREPORT']._serialized_end=1572
+  _globals['_GETTUNNELGENERATIONREQUEST']._serialized_start=1574
+  _globals['_GETTUNNELGENERATIONREQUEST']._serialized_end=1602
+  _globals['_GETTUNNELGENERATIONRESPONSE']._serialized_start=1604
+  _globals['_GETTUNNELGENERATIONRESPONSE']._serialized_end=1653
+  _globals['_LOCALDEVICEAGENT']._serialized_start=1656
+  _globals['_LOCALDEVICEAGENT']._serialized_end=3194
 # @@protoc_insertion_point(module_scope)

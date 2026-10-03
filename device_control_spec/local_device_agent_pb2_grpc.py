@@ -70,6 +70,41 @@ class LocalDeviceAgentStub(object):
                 request_serializer=local__device__agent__pb2.GetTunnelGenerationRequest.SerializeToString,
                 response_deserializer=local__device__agent__pb2.GetTunnelGenerationResponse.FromString,
                 _registered_method=True)
+        self.GetActiveContainerIds = channel.unary_unary(
+                '/browseterm.device.control.v1.LocalDeviceAgent/GetActiveContainerIds',
+                request_serializer=local__device__agent__pb2.Empty.SerializeToString,
+                response_deserializer=local__device__agent__pb2.ContainerIdList.FromString,
+                _registered_method=True)
+        self.ReconcileDeviceResources = channel.unary_unary(
+                '/browseterm.device.control.v1.LocalDeviceAgent/ReconcileDeviceResources',
+                request_serializer=local__device__agent__pb2.ReconcileResourcesRequest.SerializeToString,
+                response_deserializer=local__device__agent__pb2.Ack.FromString,
+                _registered_method=True)
+        self.GetIdleContainers = channel.unary_unary(
+                '/browseterm.device.control.v1.LocalDeviceAgent/GetIdleContainers',
+                request_serializer=local__device__agent__pb2.GetIdleContainersRequest.SerializeToString,
+                response_deserializer=local__device__agent__pb2.ContainerIdList.FromString,
+                _registered_method=True)
+        self.AllocateSnapshot = channel.unary_unary(
+                '/browseterm.device.control.v1.LocalDeviceAgent/AllocateSnapshot',
+                request_serializer=local__device__agent__pb2.AllocateSnapshotRequest.SerializeToString,
+                response_deserializer=local__device__agent__pb2.SnapshotAllocation.FromString,
+                _registered_method=True)
+        self.ReportSnapshotResult = channel.unary_unary(
+                '/browseterm.device.control.v1.LocalDeviceAgent/ReportSnapshotResult',
+                request_serializer=local__device__agent__pb2.SnapshotResultReport.SerializeToString,
+                response_deserializer=local__device__agent__pb2.Ack.FromString,
+                _registered_method=True)
+        self.GetContainer = channel.unary_unary(
+                '/browseterm.device.control.v1.LocalDeviceAgent/GetContainer',
+                request_serializer=local__device__agent__pb2.GetContainerRequest.SerializeToString,
+                response_deserializer=local__device__agent__pb2.GetContainerResponse.FromString,
+                _registered_method=True)
+        self.UpdateContainerKubernetesId = channel.unary_unary(
+                '/browseterm.device.control.v1.LocalDeviceAgent/UpdateContainerKubernetesId',
+                request_serializer=local__device__agent__pb2.UpdateKubernetesIdRequest.SerializeToString,
+                response_deserializer=local__device__agent__pb2.Ack.FromString,
+                _registered_method=True)
 
 
 class LocalDeviceAgentServicer(object):
@@ -123,6 +158,56 @@ class LocalDeviceAgentServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetActiveContainerIds(self, request, context):
+        """The 6 RPCs below finish Part 12: the last local-stack call sites that still used the global
+        CLOUD_INTERNAL_API_TOKEN secret (status_monitor's resource-drift reconciler, reaper's idle
+        sweep, snapshot_job's allocate/report, and container-maker's one remaining direct DB-row
+        lookup) now go through Device Agent's own per-device Bearer credential instead, like every
+        other local caller already does. All six need a real response back (not just an Ack a caller
+        ignores), so - same reasoning as RequestHibernate/ConsumeTerminalTicket/GetTunnelGeneration
+        above - they go through Device Agent's synchronous cloud_client HTTP path, not the
+        fire-and-forget control stream.
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ReconcileDeviceResources(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetIdleContainers(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def AllocateSnapshot(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ReportSnapshotResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetContainer(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def UpdateContainerKubernetesId(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_LocalDeviceAgentServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -155,6 +240,41 @@ def add_LocalDeviceAgentServicer_to_server(servicer, server):
                     servicer.GetTunnelGeneration,
                     request_deserializer=local__device__agent__pb2.GetTunnelGenerationRequest.FromString,
                     response_serializer=local__device__agent__pb2.GetTunnelGenerationResponse.SerializeToString,
+            ),
+            'GetActiveContainerIds': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetActiveContainerIds,
+                    request_deserializer=local__device__agent__pb2.Empty.FromString,
+                    response_serializer=local__device__agent__pb2.ContainerIdList.SerializeToString,
+            ),
+            'ReconcileDeviceResources': grpc.unary_unary_rpc_method_handler(
+                    servicer.ReconcileDeviceResources,
+                    request_deserializer=local__device__agent__pb2.ReconcileResourcesRequest.FromString,
+                    response_serializer=local__device__agent__pb2.Ack.SerializeToString,
+            ),
+            'GetIdleContainers': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetIdleContainers,
+                    request_deserializer=local__device__agent__pb2.GetIdleContainersRequest.FromString,
+                    response_serializer=local__device__agent__pb2.ContainerIdList.SerializeToString,
+            ),
+            'AllocateSnapshot': grpc.unary_unary_rpc_method_handler(
+                    servicer.AllocateSnapshot,
+                    request_deserializer=local__device__agent__pb2.AllocateSnapshotRequest.FromString,
+                    response_serializer=local__device__agent__pb2.SnapshotAllocation.SerializeToString,
+            ),
+            'ReportSnapshotResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.ReportSnapshotResult,
+                    request_deserializer=local__device__agent__pb2.SnapshotResultReport.FromString,
+                    response_serializer=local__device__agent__pb2.Ack.SerializeToString,
+            ),
+            'GetContainer': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetContainer,
+                    request_deserializer=local__device__agent__pb2.GetContainerRequest.FromString,
+                    response_serializer=local__device__agent__pb2.GetContainerResponse.SerializeToString,
+            ),
+            'UpdateContainerKubernetesId': grpc.unary_unary_rpc_method_handler(
+                    servicer.UpdateContainerKubernetesId,
+                    request_deserializer=local__device__agent__pb2.UpdateKubernetesIdRequest.FromString,
+                    response_serializer=local__device__agent__pb2.Ack.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -325,6 +445,195 @@ class LocalDeviceAgent(object):
             '/browseterm.device.control.v1.LocalDeviceAgent/GetTunnelGeneration',
             local__device__agent__pb2.GetTunnelGenerationRequest.SerializeToString,
             local__device__agent__pb2.GetTunnelGenerationResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetActiveContainerIds(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/browseterm.device.control.v1.LocalDeviceAgent/GetActiveContainerIds',
+            local__device__agent__pb2.Empty.SerializeToString,
+            local__device__agent__pb2.ContainerIdList.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ReconcileDeviceResources(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/browseterm.device.control.v1.LocalDeviceAgent/ReconcileDeviceResources',
+            local__device__agent__pb2.ReconcileResourcesRequest.SerializeToString,
+            local__device__agent__pb2.Ack.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetIdleContainers(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/browseterm.device.control.v1.LocalDeviceAgent/GetIdleContainers',
+            local__device__agent__pb2.GetIdleContainersRequest.SerializeToString,
+            local__device__agent__pb2.ContainerIdList.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def AllocateSnapshot(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/browseterm.device.control.v1.LocalDeviceAgent/AllocateSnapshot',
+            local__device__agent__pb2.AllocateSnapshotRequest.SerializeToString,
+            local__device__agent__pb2.SnapshotAllocation.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ReportSnapshotResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/browseterm.device.control.v1.LocalDeviceAgent/ReportSnapshotResult',
+            local__device__agent__pb2.SnapshotResultReport.SerializeToString,
+            local__device__agent__pb2.Ack.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetContainer(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/browseterm.device.control.v1.LocalDeviceAgent/GetContainer',
+            local__device__agent__pb2.GetContainerRequest.SerializeToString,
+            local__device__agent__pb2.GetContainerResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UpdateContainerKubernetesId(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/browseterm.device.control.v1.LocalDeviceAgent/UpdateContainerKubernetesId',
+            local__device__agent__pb2.UpdateKubernetesIdRequest.SerializeToString,
+            local__device__agent__pb2.Ack.FromString,
             options,
             channel_credentials,
             insecure,
